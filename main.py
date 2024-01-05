@@ -237,7 +237,7 @@ async def scrape_data(input_url: InputURL):
     stars_list=[]
     stars=[]
     url = input_url.url
-    reviews, details = scraping_reviews(url)
+    details = scraping_reviews(url)
     sentiment = classifier(details)
    
 
