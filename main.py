@@ -53,7 +53,7 @@ op.add_argument("--headless")
 op.add_argument("--disable-dev-shm-usage")
 op.add_argument("--no-sandbox")
 def scraping_reviews(url):
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(options=op)
     
     
     all_reviews = []
