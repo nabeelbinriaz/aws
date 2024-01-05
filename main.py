@@ -39,7 +39,7 @@ class ReviewResponse(BaseModel):
     gauge_charts: str
     score: list
 class ScrapingRequest(BaseModel):
-    url: str
+    name: str
 
 class ScrapingResponse(BaseModel):
     reviews: list
@@ -163,10 +163,10 @@ async def scrape_reviewss(request: ScrapingRequest):
     score=[]
     all_reviews = []
     all_headings = []
-    url = request.url
+    name = request.name
     stars_list=[]
     stars=[]
-    
+    url=f"https://www.trustpilot.com/review/{name}"
     try:
         driver.get(url)
 
