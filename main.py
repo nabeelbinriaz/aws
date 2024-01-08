@@ -165,7 +165,7 @@ async def scrape_reviewsss(request: SearchRequest):
    
 @app.post("/scrape_trustpilot/")
 async def scrape_reviewss(request: ScrapingRequest):
-    driver = webdriver.Chrome(options=op)
+    driver = webdriver.Chrome()
     score=[]
     all_reviews = []
     all_headings = []
