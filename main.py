@@ -50,8 +50,6 @@ class InputURL(BaseModel):
     url: str
 op = webdriver.ChromeOptions()
 op.add_argument("--headless")
-op.add_argument("--disable-dev-shm-usage")
-op.add_argument("--no-sandbox")
 def scraping_reviews(url):
     driver = webdriver.Chrome()
     
