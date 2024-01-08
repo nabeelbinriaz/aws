@@ -53,7 +53,7 @@ op.add_argument("--headless")
 op.add_argument("--disable-dev-shm-usage")
 op.add_argument("--no-sandbox")
 def scraping_reviews(url):
-    driver = webdriver.Chrome(options=op)
+    driver = webdriver.Chrome()
     
     
     all_reviews = []
@@ -100,6 +100,10 @@ async def scrape_reviewsss(request: SearchRequest):
     stars_list=[]
     reviews_dict = []
     stars=[]
+    op = webdriver.ChromeOptions()
+    op.add_argument("--headless")
+    op.add_argument("--disable-dev-shm-usage")
+    op.add_argument("--no-sandbox")
     driver = webdriver.Chrome( options=op)
 
     driver.get(urls)
@@ -110,20 +114,22 @@ async def scrape_reviewsss(request: SearchRequest):
 
     branch_pattern = re.compile(r'^https://www.google.com/maps/place/.*')
     filtered_links = [link for link in extracted_links if branch_pattern.match(link)]
-
-    
-    for index, url in enumerate(filtered_links):
+    for url in filtered_links:
+        driver= webdriver.Chrome(options=op)
         driver.get(url)
         wait = WebDriverWait(driver, 6)
         try:
             time.sleep(8)
-            review_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.wiI7pd')))
+            button = driver.find_element(By.CSS_SELECTOR, ".hh2c6")
+            button.click()
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            review_elements = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.wiI7pd')))    
             for r in review_elements:
                 reviews_dict.append(r.text)
         except Exception as e:
             print(f"Error: {e} while scraping {url}")
 
-    driver.quit()
+        driver.quit()
     
     sentiment = classifier(reviews_dict)
     for item in sentiment:
@@ -237,7 +243,7 @@ async def scrape_data(input_url: InputURL):
     stars_list=[]
     stars=[]
     url = input_url.url
-    details = scraping_reviews(url)
+    reviews, details = scraping_reviews(url)
     sentiment = classifier(details)
    
 
