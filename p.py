@@ -20,6 +20,7 @@ if __name__ == '__main__':
         page = browser.new_page()
         # go to url with Playwright page element
         page.goto(URL)
+        time.sleep(15)
         # deal with cookies page
         # write what you're looking for
         page.fill("input", "kababjees")
