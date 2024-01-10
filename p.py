@@ -3,63 +3,74 @@ from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from rich import print
 
-# The category for which we seek reviews
+
+# the category for which we seek reviews
 CATEGORY = "kfc"
-# The location
+# the location
 LOCATION = "karachi"
-# Google's main URL
+# google's main URL
 URL = "https://www.google.com/maps"
+
 
 if __name__ == '__main__':
     with sync_playwright() as pw:
-        # Creates an instance of the Chromium browser and launches it in headless mode
+        # creates an instance of the Chromium browser and launches it
         browser = pw.chromium.launch(headless=True)
-        # Creates a new browser page (tab) within the browser instance
+        # creates a new browser page (tab) within the browser instance
         page = browser.new_page()
-
-        # Go to URL with Playwright page element
-        page.goto(URL, wait_until="networkidle")
-
-        # Fill in the search query and press Enter
-        page.fill("input[aria-label='Search Google Maps']", CATEGORY + " " + LOCATION)
+        # go to url with Playwright page element
+        page.goto(URL)
+        # deal with cookies page
+        # write what you're looking for
+        page.fill("input", "kababjees")
+        # press enter
         page.keyboard.press('Enter')
+        # change to english
+        time.sleep(4)
+        # scrolling
 
-        # Wait for the search results to load
-        page.wait_for_selector('.hfpxzc', timeout=60000)
+            # tackle the body element
+        html = page.inner_html('body')
+        # create beautiful soup element
+        soup = BeautifulSoup(html, 'html.parser')
 
-        # Get links of all categories after the search
-        links = page.eval_on_selector_all('.hfpxzc', 'elements => elements.map(e => e.href)')
 
-        # Go to the specific link (assuming the first link is the desired one)
-        page.goto(links[1], wait_until="networkidle")
+        
 
-        # Load all reviews by clicking the 'Reviews' button
+
+        # get links of all categories after scroll
+        links = [item.get('href') for item in soup.select('.hfpxzc')]
+        # print(links)
+
+ 
+            # go to subject link
+        page.goto(links[1])
+        time.sleep(4)
+        # load all reviews
         page.locator("text='Reviews'").first.click()
-
-        # Initialize variables for review scraping loop
+        time.sleep(4)
+        # create new soup
         prev_review_count = 0
-        reviews = []
-
         while True:
-            # Scroll down to load more reviews
-            page.mouse.wheel(0, 5000)  # Smaller scroll increment for more controlled loading
-            time.sleep(3)  # Allow time for new reviews to load
+            # Scroll down
+            page.mouse.wheel(0, 10000)
+            
+            # Wait for new reviews to load
+            time.sleep(5)
 
-            # Extract reviews using BeautifulSoup
+            # Create new soup
             html = page.inner_html('body')
+            # Create beautiful soup element
             soup = BeautifulSoup(html, 'html.parser')
-            current_reviews = soup.select('.MyEned')
-            current_review_count = len(current_reviews)
+            
+            # Scrape reviews
+            reviews = soup.select('.MyEned')
+            current_review_count = len(reviews)
 
             # Check if no new reviews were loaded
             if current_review_count == prev_review_count:
                 break
-            else:
-                reviews.extend(current_reviews)
-                prev_review_count = current_review_count
-
-        # Extract review texts
+            prev_review_count = current_review_count
         review_texts = [review.find('span', class_='wiI7pd').text for review in reviews if review.find('span', class_='wiI7pd')]
-
         # Print the final count of reviews
         print(review_texts)
