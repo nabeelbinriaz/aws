@@ -2,7 +2,7 @@ import time
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from rich import print
-
+from playwright_stealth import stealth_sync
 
 # the category for which we seek reviews
 CATEGORY = "kfc"
@@ -19,6 +19,7 @@ if __name__ == '__main__':
         # creates a new browser page (tab) within the browser instance
         page = browser.new_page()
         # go to url with Playwright page element
+        stealth_sync(page)
         page.goto(URL)
         time.sleep(15)
         # deal with cookies page
